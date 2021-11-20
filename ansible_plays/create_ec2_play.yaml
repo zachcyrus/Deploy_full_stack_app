@@ -1,6 +1,7 @@
 ---
 - name: Create Ec2 instances
-  hosts: localhost
+  hosts: local
+  connection: local
   gather_facts: false
   vars:
     region: us-east-1
@@ -30,7 +31,9 @@
             cidr_ip: 0.0.0.0/0
       register: jenkins_controller_sg
 
-
+    - name: Print out the id of jenkins_controller_sg
+      debug:
+        msg: "The ID is {{ jenkins_controller_sg.group_id }}"
 
 
     - name: Create Jenkins Agent Security Group
@@ -63,9 +66,13 @@
         aws_secret_key: "{{aws_secret_key}}"
         user_data: "{{ lookup('file', 'jenkins_install.sh') }}"
         wait: yes
+        key_name: "{{key_pair}}"
         image: "{{ami}}"
         instance_type: t2.micro
-        group_id: jenkins_controller_sg.group_id
+        group_id: "{{jenkins_controller_sg.group_id}}"
+        instance_tags:
+          Name: Jenkins-Controller
+          Ansible: true 
         region: "{{region}}"
 
 
@@ -74,10 +81,13 @@
         aws_access_key: "{{aws_access_key}}"
         aws_secret_key: "{{aws_secret_key}}"
         wait: yes
-        key_pair: "{{key_pair}}"
+        key_name: "{{key_pair}}"
         image: "{{ami}}"
         instance_type: t2.micro
-        group_id: jenkins_agent_sg.group_id
+        group_id: "{{jenkins_agent_sg.group_id}}"
+        instance_tags:
+          Name: Jenkins-Agent
+          Ansible: true 
         region: "{{region}}"
 
 
