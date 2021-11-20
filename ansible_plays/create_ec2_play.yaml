@@ -1,0 +1,86 @@
+---
+- name: Create Ec2 instances
+  hosts: localhost
+  gather_facts: false
+  vars:
+    region: us-east-1
+    ami: ami-083654bd07b5da81d 
+  tasks:
+
+    - name: Create Jenkins Security Group
+      ec2_group:
+        name: "Jenkins Security Group"
+        description: "Security group for Jenkins Controller"
+        region: '{{region}}'
+        aws_access_key: {{aws_access_key}}
+        aws_secret_key: {{aws_secret_key}}
+        rules: 
+          - proto: tcp
+            from_port: 80
+            to_port: 80
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 8080
+            to_port: 8080
+            cidr_ip: 0.0.0.0/0
+
+          - proto: tcp
+            from_port: 22
+            to_port: 22
+            cidr_ip: 0.0.0.0/0
+      register: jenkins_controller_sg
+
+
+
+
+    - name: Create Jenkins Agent Security Group
+      ec2_group:
+        name: "Jenkins Agent - SG"
+        description: "Security group for Jenkins Agent"
+        region: '{{region}}'
+        aws_access_key: {{aws_access_key}}
+        aws_secret_key: {{aws_secret_key}}
+        rules: 
+          - proto: tcp
+            from_port: 80
+            to_port: 80
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 8080
+            to_port: 8080
+            cidr_ip: 0.0.0.0/0
+
+          - proto: tcp
+            from_port: 22
+            to_port: 22
+            cidr_ip: 0.0.0.0/0
+      register: jenkins_agent_sg
+
+
+    - name: Create Jenkins Controller
+      ec2:
+        aws_access_key: {{aws_access_key}}
+        aws_secret_key: {{aws_secret_key}}
+        user_data: "{{ lookup('file', 'jenkins_install.sh') }}"
+        wait: yes
+        image: {{ami}}
+        instance_type: t2.micro
+        group_id: jenkins_controller_sg.group_id
+        region: {{region}}
+
+
+    - name: Create Jenkins Agent
+      ec2:
+        aws_access_key: {{aws_access_key}}
+        aws_secret_key: {{aws_secret_key}}
+        wait: yes
+        key_pair: {{key_pair}}
+        image: {{ami}}
+        instance_type: t2.micro
+        group_id: jenkins_agent_sg.group_id
+        region: {{region}}
+
+
+
+
+
