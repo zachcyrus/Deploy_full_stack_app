@@ -2,13 +2,18 @@
 
 sudo apt-get update -y
 
-sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
-sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
-
+# Jenkins needs git to pull repos
 sudo apt-get install git -y
 
+# Jenkins needs java to install and run
 sudo apt install openjdk-11-jdk -y
 
+# Obtaining Jenkins key and adding to apt repo
+wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -
+sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+
+# Update repo so we can install jenkins
+sudo apt-get update -y
 
 sudo apt-get install jenkins -y
 
