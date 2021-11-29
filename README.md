@@ -55,3 +55,7 @@
 #### Fun Errors
  
 1. The Jenkins install page is out of date doesn't point to right key location
+2. Used git reset to undo 2 previous commits cause they contained AWS credentials in the secrets.yaml file.
+    ```
+    git reset --hard HEAD~2
+    ```
