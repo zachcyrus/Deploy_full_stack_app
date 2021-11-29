@@ -48,7 +48,7 @@
 
 1. ~~Update bash script to install jenkins on an ubuntu instance on AWS~~
 2. ~~Add Production environment to list of instances to be created.~~
-3. Create a playbook to install universal dependencies on all environments such as java, git, etc
+3. ~~Create a playbook to install universal dependencies on all environments such as java, git, etc~~
 4. Frontend App requires Javascript and the backend app requires Python. 
 
 
